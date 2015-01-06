@@ -1,46 +1,78 @@
 from django.db import models
+from django.conf import settings
 
 
-class BaseColor(models.Model):
+class Brand(models.Model):
     name = models.CharField(max_length=32, blank=False, null=False)
-    
- 
-# basecolors are children of this
+
+#dress, jeans or jacket, etc
+class ProductType(models.Model):
+    name = models.CharField(max_length=32, blank=False, null=False)
+
+
 class ColorPattern(models.Model):
-    name = models.CharField(max_length=32, blank=False, null=False)
+    family_name = models.CharField(max_length=32, blank=False, null=False, unique=True)
+    hsv_level = models.PositiveSmallIntegerField(blank=True, null=True)
     slug = models.SlugField(max_langth=32, blank=True, null=True)
-    basecolors = models.ManyToManyField('BaseColor')
+    swatch = models.ImageField(upload_to=settings.SWATCH_ROOT, blank=False)
     
-    def append(self, basecolor):
-        self.basecolors.add(basecolor)
-    
-    def remove(self, basecolor):
-        self.basecolors.remove(basecolor)
+    num_of_colors = models.IntegerField(blank=True, null=True)
+    is_solid = models.BooleanField(blank=False, default=False)
+    is_complex_pattern = models.BooleanField(blank=False, default=False)
+    is_blackandwhite = models.BooleanField(blank=False, default=False)
+    known_names = models.CharField(max_length=300, null=True)
+
+    def __unicode__(self):
+        return u"name of color palette: %s " % self.name
     
     @property
-    def get_num_basecolors(self):
-        return len(self.basecolors)
+    def swatch_url(self):
+        return self.swatch.url
+
 
     
 class ClothItem(models.Model):
     name = models.CharField(max_length=120, blank=False, null=False)
+    path = models.URLField(blank=True, null=True)
+    brand = models.ForeignKey('Brand')
     
-    colorpatterns = models.ManyToManyField(ColorPattern)
-    image=models.ImageField(upload_to=upload_path)
-    image_url = models.URLField(null=True, blank=True)
-    field = models.DecimalField(max_digits=8, decimal_places=2)
+    palettes = models.ManyToManyField(ColorPattern)
     
-    def save(self, *args, **kwargs):
-        if self.image_url:
-            import urllib, os
-            from urlparse import urlparse
-            file_save_dir = self.upload_path
-            filename = urlparse(self.image_url).path.split('/')[-1]
-            urllib.urlretrieve(self.image_url, os.path.join(file_save_dir, filename))
-            self.image = os.path.join(file_save_dir, filename)
-            self.image_url = ''
-        super(tweet_photos, self).save()
- 
+    has_multiple_colors = models.BooleanField(default=False)
+    
+    GENDER_CHOICES = (
+        ('M', 'Male'),
+        ('F', 'Female'),
+    )
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
+    
+    AGEGROUP_CHOICES = (
+        ('E', 'Teen'),
+        ('A', 'Adult'),
+    )
+    agegroup = models.CharField(max_length=1, choices=AGEGROUP_CHOICES)
+    
+    photo_path=models.ImageField(upload_to=settings.MEDIA_PATH)
+    photo_url = models.URLField(null=True, blank=True)
+   
+    
+    regular_price = models.DecimalField(max_digits=8, decimal_places=2)
+    sale_price = models.DecimalField(max_digits=8, decimal_places=2)
+    percent_off = models.PositiveIntegerField()    
+    
+    average_rating = models.DecimalField(max_digits=3, decimal_places=1, blank=True, null=True)
+    is_designer = models.BooleanField(default = False)
+    
+    def append(self, color):
+        self.palettes.add(color)
+    
+    def remove(self, color):
+        self.palettes.remove(color)
+    
+    @property
+    def get_num_palettes(self):
+        return len(self.palettes)
+    
  # find colorpattern that this basecolor appears in.  
 
 #basecolor.colorpattern_set.all()  # print all colorpatterns with this base color

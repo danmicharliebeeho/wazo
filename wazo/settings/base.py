@@ -4,6 +4,9 @@ import os.path
 
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 PROJECT_NAME = os.path.basename(ROOT_DIR)
+import os
+
+os.environ['DJANGO_SETTINGS_MODULE'] = 'wazo.settings'
 
 
 def ABS_PATH(*args):
@@ -11,7 +14,6 @@ def ABS_PATH(*args):
 
 
 def ENV_SETTING(key, default):
-    import os
     return os.environ.get(key, default)
 
 
@@ -57,6 +59,8 @@ MEDIA_ROOT = ABS_PATH('media')
 # Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
 MEDIA_URL = '/media/'
 
+SWATCH_ROOT = ABS_PATH('swatch')
+SWATCH_URL = '/swatch/'
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
