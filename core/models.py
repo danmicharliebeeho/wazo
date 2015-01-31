@@ -74,6 +74,9 @@ class ClothItem(models.Model):
     average_rating = models.DecimalField(max_digits=3, decimal_places=1, blank=True, null=True)
     is_designer = models.BooleanField(default = False)
     
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimefield(auto_now=True)
+    
     def append(self, color):
         self.palettes.add(color)
     
