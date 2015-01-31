@@ -16,6 +16,7 @@ class BaseColor(models.Model):
     
     
 class ColorPattern(models.Model):
+    name = models.CharField(max_length=32, blank=False, null=False, unique = True)
     family_name = models.CharField(max_length=32, blank=False, null=False, unique=True)
     slug = models.SlugField(max_langth=32, blank=True, null=True)
     swatch = models.ImageField(upload_to=settings.SWATCH_ROOT, blank=False)
