@@ -10,9 +10,13 @@ class ProductType(models.Model):
     name = models.CharField(max_length=32, blank=False, null=False)
 
 
+class BaseColor(models.Model):
+    name = models.CharField(max_length=32, blank=False, null=False, unique=True)
+    level = models.PositiveSmallIntegerField(blank=True, null=True)
+    
+    
 class ColorPattern(models.Model):
     family_name = models.CharField(max_length=32, blank=False, null=False, unique=True)
-    hsv_level = models.PositiveSmallIntegerField(blank=True, null=True)
     slug = models.SlugField(max_langth=32, blank=True, null=True)
     swatch = models.ImageField(upload_to=settings.SWATCH_ROOT, blank=False)
     
@@ -21,6 +25,13 @@ class ColorPattern(models.Model):
     is_complex_pattern = models.BooleanField(blank=False, default=False)
     is_blackandwhite = models.BooleanField(blank=False, default=False)
     known_names = models.CharField(max_length=300, null=True)
+    basecolors = models.ManyToManyField(BaseColor)
+    
+    def append(self, basecolor):
+        self.basecolors.add(basecolor)
+    
+    def remove(self, basecolor):
+        self.basecolor.remove(basecolor)
 
     def __unicode__(self):
         return u"name of color palette: %s " % self.name
