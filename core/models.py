@@ -18,7 +18,7 @@ class BaseColor(models.Model):
 class ColorPattern(models.Model):
     name = models.CharField(max_length=32, blank=False, null=False, unique = True)
     family_name = models.CharField(max_length=32, blank=False, null=False, unique=True)
-    slug = models.SlugField(max_langth=32, blank=True, null=True)
+    slug = models.SlugField(max_length=32, blank=True, null=True)
     swatch = models.ImageField(upload_to=settings.SWATCH_ROOT, blank=False)
     
     num_of_colors = models.IntegerField(blank=True, null=True)
@@ -64,19 +64,19 @@ class ClothItem(models.Model):
     )
     agegroup = models.CharField(max_length=1, choices=AGEGROUP_CHOICES)
     
-    photo_path=models.ImageField(upload_to=settings.MEDIA_PATH)
+    photo_path=models.ImageField(upload_to=settings.MEDIA_ROOT)
     photo_url = models.URLField(null=True, blank=True)
    
     
     regular_price = models.DecimalField(max_digits=8, decimal_places=2)
-    sale_price = models.DecimalField(max_digits=8, decimal_places=2)
-    percent_off = models.PositiveIntegerField()    
+    sale_price = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
+    percent_off = models.PositiveIntegerField(default=0, blank=True, null=True)    
     
     average_rating = models.DecimalField(max_digits=3, decimal_places=1, blank=True, null=True)
     is_designer = models.BooleanField(default = False)
     
     created_date = models.DateTimeField(auto_now_add=True)
-    updated_date = models.DateTimefield(auto_now=True)
+    updated_date = models.DateTimeField(auto_now=True)
     
     def append(self, color):
         self.palettes.add(color)
