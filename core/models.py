@@ -11,13 +11,16 @@ class ProductType(models.Model):
 
 
 class BaseColor(models.Model):
-    name = models.CharField(max_length=32, blank=False, null=False, unique=True)
+    name = models.CharField(max_length=32, blank=False, null=False, unique=False)
     level = models.PositiveSmallIntegerField(blank=True, null=True)
     
+    unique_together = ("name", "level")
+    def __str__(self):             
+        return self.name + "" + str(self.level)
     
 class ColorPattern(models.Model):
     name = models.CharField(max_length=32, blank=False, null=False, unique = True)
-    family_name = models.CharField(max_length=32, blank=False, null=False, unique=True)
+    family_name = models.CharField(max_length=32, blank=False, null=False, unique=False)
     slug = models.SlugField(max_length=32, blank=True, null=True)
     swatch = models.ImageField(upload_to=settings.SWATCH_ROOT, blank=False)
     

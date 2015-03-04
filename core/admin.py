@@ -1,5 +1,15 @@
-'''
-Created on Feb 18, 2015
+from django.contrib import admin
+from .models import BaseColor, ClothItem, ColorPattern
 
-@author: Jamie_Park1
-'''
+
+class BaseColorInline(admin.StackedInline):
+    model = BaseColor
+
+class ColorPatternAdmin(admin.ModelAdmin):
+    inlines = [ BaseColorInline,]
+
+class ClothItemAdmin(admin.ModelAdmin):
+    pass
+
+admin.site.register(ColorPattern, ColorPatternAdmin)
+admin.site.register(ClothItem, ClothItemAdmin)
