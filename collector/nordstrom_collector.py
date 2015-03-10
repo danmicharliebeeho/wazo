@@ -29,11 +29,10 @@ class Collector(object):
     
     def collect_urls(self):
         pass
-    
+
+
 class nordstrom_collector(Collector):
-    
-    
-    
+ 
     def process_single_page(self, url, page_id):
         response = urllib2.urlopen(url)
         data = json.load(response)
@@ -98,23 +97,14 @@ class nordstrom_collector(Collector):
                   
                 if curr_clothitem != None:
                     for available_colors in item['AvailableColors']:
-                        print available_colors['ColorName']
-                        
-                        # standard color
-                        standarcoors = available_colors['StandardColors']
-                        for item in standarcoors:
-                            print item['StandardColor']
-                        
-                      
                         color_name = slugify(available_colors['ColorName'])
-                        print "olor name:", color_name
                         swatchImageUrl = available_colors['swatchImageUrl']
+                         
+                        #download the swatch image
                         full_swatch_path = "{0}{1}".format(swatchimg_base_url, swatchImageUrl)
-                        print full_swatch_path
-                        
                         fd_loc = "{0}/{1}.jpg".format(settings.SWATCH_ROOT, color_name)
                         urllib.urlretrieve(full_swatch_path, fd_loc)
-                         
+                
                         # find base colors first
                         start_time = time.time()
                         detailed_color, color_group = fast_fuzzy.fast_fuzzy_palettes(fd_loc)
@@ -140,25 +130,41 @@ class nordstrom_collector(Collector):
                         
                         print BaseColor.objects.all()
                      
-                         
                         
-                        print "current color name:", color_name
-                        print ColorPattern.objects.all()
-                        for c in ColorPattern.objects.all():
-                            print "colorpatern:", c.name
-                            print "family name:", c.family_name
-                        # maybe only top 3, 4?
+                        #standard colors -> translates to family name
+                        standardColors = available_colors['StandardColors']
+                        colorfamilies = []
+                        for item in standardColors:
+                            name = item['StandardColor']
+                            colorfamily = None
+                            try:
+                                colorfamily = ColorFamily.objects.get(name=name)
+                            except ColorFamily.DoesNotExist:
+                                print "colorfamily does not exist"
+                                colorfamily = ColorFamily.objects.create(name=name)
+                            if colorfamily != None:
+                                colorfamilies.append(colorfamily)
+                        
+                        colorpattern = None
                         try:
-                            colorpattern = ColorPattern.objects.get(basecolors__in=basecolors)
+                            colorpattern = ColorPattern.objects.get()
                         except ColorPattern.DoesNotExist:
-                            print "colorpattern doesn't exist"
-                            colorpattern = ColorPattern.objects.create(name = color_name, num_of_colors = len(basecolors), \
-                                             is_solid = is_solid, is_complex_pattern = is_complex_pattern, \
-                                             is_blackandwhite = is_blackandwhite)
-                            for b in basecolors:
-                                colorpattern.append(b)
- 
-                        curr_clothitem.append(colorpattern)
+                            print "colorpattern does not exist"
+                            colorpattern = ColorPattern.objects.create(name=color_name, num_of_colors = len(basecolors))
+                        
+                        # add this colorpattern to its colorfamilies
+                        for item in colorfamilies:
+                            item.add_colorpattern(colorpattern)
+                            # now assign colorgamily to current clothitem
+                            curr_clothitem.add_colorfamilies(item)
+                            
+                        # add basecolors to this colorpattern
+                        for item in basecolors:
+                            colorpattern.add_basecolor(item)
+                        
+                        
+                        # now assign colorpattern to current clothitem
+                        curr_clothitem.add_colorpalettes(colorpattern)
                         curr_clothitem.save()
                     
               
