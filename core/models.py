@@ -9,18 +9,24 @@ class Brand(models.Model):
 class ProductType(models.Model):
     name = models.CharField(max_length=32, blank=False, null=False)
 
-
 class BaseColor(models.Model):
     name = models.CharField(max_length=32, blank=False, null=False, unique=False)
     level = models.PositiveSmallIntegerField(blank=True, null=True)
     
     unique_together = ("name", "level")
+    
     def __str__(self):             
         return self.name + "" + str(self.level)
     
+    def get_related_color_patterns(self):
+        return self.colorpattern_set
+    
+    def get_num_of_related_color_patterns(self):
+        return self.colorpattern_set.count()
+
+
 class ColorPattern(models.Model):
     name = models.CharField(max_length=32, blank=False, null=False, unique = True)
-    family_name = models.CharField(max_length=32, blank=False, null=False, unique=False)
     slug = models.SlugField(max_length=32, blank=True, null=True)
     swatch = models.ImageField(upload_to=settings.SWATCH_ROOT, blank=False)
     
@@ -31,27 +37,52 @@ class ColorPattern(models.Model):
     known_names = models.CharField(max_length=300, null=True)
     basecolors = models.ManyToManyField(BaseColor)
     
-    def append(self, basecolor):
-        self.basecolors.add(basecolor)
-    
-    def remove(self, basecolor):
-        self.basecolor.remove(basecolor)
-
-    def __unicode__(self):
-        return u"name of color palette: %s " % self.name
+    def __str__(self):
+        return "name of color palette: %s " % self.name
     
     @property
     def swatch_url(self):
         return self.swatch.url
-
-
+        
+    def add_basecolor(self, basecolor):
+        self.basecolors.add(basecolor)
     
+    def remove_basecolor(self, basecolor):
+        self.basecolor.remove(basecolor)
+    
+    def get_related_color_families(self):
+        return self.colorfamily_set
+    
+    def get_num_of_related_color_families(self):
+        return self.colorfamily_set.count()
+    
+    def get_related_clothitems(self):
+        return self.clothitem_set
+    
+    def get_num_of_related_clothitems(self):
+        return self.clothitem_set.count() 
+
+class ColorFamily(models.Model):
+    name = models.CharField(max_length=32, blank=False, null=False, unique=False)
+    colorpatterns = models.ManyToManyField('ColorPattern')
+   
+    def __str__(self):
+        return "name of color family: %s" % self.name
+    
+    def get_related_clothitems(self):
+        return self.clothitem_set
+    
+    def get_num_of_related_clothitems(self):
+        return self.clothitem_set.count() 
+    
+
 class ClothItem(models.Model):
     name = models.CharField(max_length=120, blank=False, null=False)
     path = models.URLField(blank=True, null=True)
     brand = models.ForeignKey('Brand')
     
     palettes = models.ManyToManyField(ColorPattern)
+    colorfamily = models.ManyToManyField(Colorfamily)
     
     has_multiple_colors = models.BooleanField(default=False)
     
