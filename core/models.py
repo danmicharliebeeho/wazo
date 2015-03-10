@@ -69,6 +69,12 @@ class ColorFamily(models.Model):
     def __str__(self):
         return "name of color family: %s" % self.name
     
+    def add_colorpattern(self, colorpattern):
+        self.colorpatterns.add(colorpattern)
+    
+    def remove_colorpattern(self, colorpattern):
+        self.colorpatterns.remove(colorpattern)
+        
     def get_related_clothitems(self):
         return self.clothitem_set
     
@@ -82,7 +88,7 @@ class ClothItem(models.Model):
     brand = models.ForeignKey('Brand')
     
     palettes = models.ManyToManyField(ColorPattern)
-    colorfamily = models.ManyToManyField(Colorfamily)
+    colorfamilies = models.ManyToManyField(Colorfamily)
     
     has_multiple_colors = models.BooleanField(default=False)
     
@@ -112,12 +118,18 @@ class ClothItem(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
     
-    def append(self, color):
-        self.palettes.add(color)
+    def add_colorpalettes(self, palette):
+        self.palettes.add(palette)
     
-    def remove(self, color):
-        self.palettes.remove(color)
+    def remove_colorpalettes(self, palette):
+        self.palettes.remove(palette)
     
+    def add_colorfamilies(self, colorfamily):
+        self.colorfamilies.add(colorfamily)
+    
+    def remove_colorfamilies(self, colorfamily):
+        self.colorfamilies.remove(colorfamily)
+
     @property
     def get_num_palettes(self):
         return len(self.palettes)
