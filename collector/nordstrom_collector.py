@@ -14,7 +14,7 @@ from django.core.files.base import ContentFile
 
 from palettes import get_palette, get_dominant_color
 from imageprocess import fast_fuzzy, kmeans, findROI, utils
-from core.models import Brand, ProductType, BaseColor, ColorPattern, ClothItem
+from core.models import Brand, ProductType, BaseColor, ColorPattern, ClothItem, ColorFamily
 
 
 class Collector(object):
@@ -71,7 +71,9 @@ class nordstrom_collector(Collector):
                 
                 photo_path = item['PhotoPath']
                 full_photo_path = "{0}/{1}".format(mediumimg_base_url, photo_path)
-                response = requests.get(full_photo_path)
+             #   response = requests.get(full_photo_path)
+                
+                
                 
                 
                 alt_photo_path = item['AltPhotoPath']
@@ -92,8 +94,8 @@ class nordstrom_collector(Collector):
                 except ClothItem.DoesNotExist:
                     curr_clothitem = ClothItem.objects.create(name=item_name, path=full_prod_url, brand=curr_brand, \
                                      gender=gender, agegroup=agegroup, regular_price=regular_price, sale_price=sale_price,\
-                                     percent_off=percent_off, is_designer=True, photo_path=ContentFile(response.content), \
-                                     photo_url=full_photo_path)
+                                     percent_off=percent_off, is_designer=True,  \
+                                     image_url=full_photo_path)
                   
                 if curr_clothitem != None:
                     for available_colors in item['AvailableColors']:
@@ -102,12 +104,20 @@ class nordstrom_collector(Collector):
                          
                         #download the swatch image
                         full_swatch_path = "{0}{1}".format(swatchimg_base_url, swatchImageUrl)
-                        fd_loc = "{0}/{1}.jpg".format(settings.SWATCH_ROOT, color_name)
-                        urllib.urlretrieve(full_swatch_path, fd_loc)
-                
-                        # find base colors first
+                     #   fd_loc = "{0}/{1}.jpg".format(settings.SWATCH_ROOT, color_name)
+                      #  urllib.urlretrieve(full_swatch_path, fd_loc)
+                      
+                        print settings.SWATCH_ROOT
+                        colorpattern = None
+                        try:
+                            colorpattern = ColorPattern.objects.get(name = color_name)
+                        except ColorPattern.DoesNotExist:
+                            print "colorpattern does not exist"
+                            colorpattern = ColorPattern.objects.create(name=color_name, swatch_url=full_swatch_path)
+                            
+                            # find base colors first
                         start_time = time.time()
-                        detailed_color, color_group = fast_fuzzy.fast_fuzzy_palettes(fd_loc)
+                        detailed_color, color_group = fast_fuzzy.fast_fuzzy_palettes(colorpattern.swatch_path)
                         print("fast-fuzzy:--- %s seconds ---" % (time.time() - start_time))
                         print detailed_color
                         split_txt_digits_regex = re.compile("([a-zA-Z\-]+)([0-9]+)")
@@ -127,7 +137,7 @@ class nordstrom_collector(Collector):
                                 bc = BaseColor.objects.create(name=color_name, level=color_level)
                             if bc != None:
                                 basecolors.append(bc)  
-                        
+                            print bc
                         print BaseColor.objects.all()
                      
                         
@@ -145,13 +155,9 @@ class nordstrom_collector(Collector):
                             if colorfamily != None:
                                 colorfamilies.append(colorfamily)
                         
-                        colorpattern = None
-                        try:
-                            colorpattern = ColorPattern.objects.get()
-                        except ColorPattern.DoesNotExist:
-                            print "colorpattern does not exist"
-                            colorpattern = ColorPattern.objects.create(name=color_name, num_of_colors = len(basecolors))
+                         
                         
+                        print ColorPattern.objects.all()
                         # add this colorpattern to its colorfamilies
                         for item in colorfamilies:
                             item.add_colorpattern(colorpattern)
@@ -164,15 +170,16 @@ class nordstrom_collector(Collector):
                         
                         
                         # now assign colorpattern to current clothitem
-                        curr_clothitem.add_colorpalettes(colorpattern)
+                        curr_clothitem.add_colorpatterns(colorpattern)
                         curr_clothitem.save()
                     
-              
- 
-            
+                        basecolors = []
+                        colorfamilies = []
+             
                 print '\n'
             except KeyError:
                 pass
+            break
         print agegroup_set
  
 def main():

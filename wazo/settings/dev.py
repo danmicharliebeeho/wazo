@@ -5,8 +5,16 @@ DEBUG = (ENV_SETTING('DEBUG', 'true') == 'true')
 TEMPLATE_DEBUG = (ENV_SETTING('TEMPLATE_DEBUG', 'true') == 'true')
 COMPRESS_ENABLED = (ENV_SETTING('COMPRESS_ENABLED', 'true') == 'true')
 
-DATABASES = {'default': dj_database_url.config(
-    default='sqlite:////' + ROOT_DIR + '/dev.db')}
+DATABASES = {
+             'default': {
+                'ENGINE': 'django.db.backends.postgresql_psycopg2',
+                'NAME': 'wazo',
+                'USER': 'wazo',
+                'HOST': '127.0.0.1',
+                'PORT': 5432,  
+            },
+             
+}
 
 EMAIL_BACKEND = ENV_SETTING('EMAIL_BACKEND',
     'django.core.mail.backends.console.EmailBackend')

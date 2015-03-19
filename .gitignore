@@ -9,4 +9,5 @@
 /coverage.xml
 /nosetests.xml
 
-*.pyc
+
+*.jpg
