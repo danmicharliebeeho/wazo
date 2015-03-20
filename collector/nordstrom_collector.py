@@ -117,7 +117,7 @@ class nordstrom_collector(Collector):
                             
                             # find base colors first
                         start_time = time.time()
-                        detailed_color, color_group = fast_fuzzy.fast_fuzzy_palettes(colorpattern.swatch_path)
+                        detailed_color, color_group = fast_fuzzy.fast_fuzzy_palettes(colorpattern.swatch_file)
                         print("fast-fuzzy:--- %s seconds ---" % (time.time() - start_time))
                         print detailed_color
                         split_txt_digits_regex = re.compile("([a-zA-Z\-]+)([0-9]+)")
@@ -193,3 +193,57 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+"""
+http://shop.nordstrom.com/FashionSearch.axd?category=b2374331&contextualsortcategoryid=0&instoreavailability=false&page=2&pagesize=100&partial=0&shopperSegment=1-0-2%7C6M2%3ARS&sizeFinderId=2&type=category
+{u'PathAlias': u'june-hudson-floral-print-high-low-wrap-dress', u'ParentProductTypeDisplayName': u'Dresses', u'OriginalMinimumPrice': 78.0, u'Title': u'June & Hudson Floral Print High/Low Wrap Dress', u'PickUpInStore': True, u'BrandLabelId': 8989, u'GenderName': u'Female', u'Highlight': u'NEW!', u'IsAvailableInStoreLocally': False, u'New': True, u'AgeGroup': u'A', u'AverageRating': 4.1, u'Available': True, u'IsAvailableInStoreGlobally': False, u'PriceDisplay': {u'PercentOff': None, u'SalePrice': None, u'RegularPrice': u'$78.00'}, u'IsFCAvailable': False, u'MultipleColors': False, u'PercentOff': 0.0, u'BrandLabelName': u'June & Hudson', u'PhotoPath': u'/18/_10174178.jpg', u'ProductTypeDisplayName': u'Dress', u'NumberReviews': 17, u'Gender': u'F', u'IsOutfit': False, u'SpecialTreatmentTypes': 0, u'HighlightStyle': u'highlight new', u'QuickViewEnabled': True, u'FreeShipping': False, u'SaleType': 0, u'CampaignTier': 0, u'MoreColors': False, u'PickUpInStoreEligible': False, u'MinimumPrice': 78.0, u'VideoMediumUrl': u'/10/_10295950.mp4', u'ParentProductTypeId': u'1', u'IsDesigner': False, u'AgeGroupName': u'Adult', u'SpriteName': u'12_10142232', u'SkuStores': [], u'InfoDivStyleName': u'info new women adult', u'MultipleViews': True, u'SuppressMoreColorsFlag': 0, u'SuppressPrice': False, u'MaximumPrice': 78.0, u'StyleNumber': u'862406', u'IsUMAPPED': False, u'IsBeauty': False, u'OriginalMaximumPrice': 78.0, u'AvailableColors': [{u'ColorName': u'CREAM', u'Selected': True, u'productImageUrl': u'/18/_10174178.jpg', u'StandardColors': [{u'StandardColor': u'offwhite'}], u'swatchImageUrl': u'/12/_10142232.jpg', u'SpriteIndex': 0}], u'CategoryTier': 0, u'MasterRank': 9999999.0, u'Id': 3800814, u'AltPhotoPath': u'/2/_10333662.jpg'}
+June & Hudson
+/Users/Jamie_Park1/wazo/wazo/swatch
+Counter({'yellow20': 2, 'yellow-red15': 2, 'yellow-red13': 2, 'magenta-blue22': 1, 'red17': 1, 'gray1': 1, 'yellow17': 1, 'yellow16': 1, 'yellow21': 1, 'red-magenta20': 1, 'white0': 1, 'red-magenta18': 1, 'yellow15': 1, 'blue-cyan18': 1, 'yellow13': 1, 'yellow-red11': 1, 'gray0': 1, 'cyan22': 1})
+Counter({'yellow': 33.33, 'yellow-red': 23.81, 'gray': 9.52, 'red-magenta': 9.52, 'magenta-blue': 4.76, 'cyan': 4.76, 'blue-cyan': 4.76, 'white': 4.76, 'red': 4.76})
+fast-fuzzy:--- 0.0260028839111 seconds ---
+Counter({'yellow20': 2, 'yellow-red15': 2, 'yellow-red13': 2, 'magenta-blue22': 1, 'red17': 1, 'gray1': 1, 'yellow17': 1, 'yellow16': 1, 'yellow21': 1, 'red-magenta20': 1, 'white0': 1, 'red-magenta18': 1, 'yellow15': 1, 'blue-cyan18': 1, 'yellow13': 1, 'yellow-red11': 1, 'gray0': 1, 'cyan22': 1})
+('magenta-blue', '22')
+magenta-blue22
+('red', '17')
+red17
+('gray', '1')
+gray1
+('yellow', '17')
+yellow17
+('yellow', '16')
+yellow16
+('yellow', '20')
+yellow20
+('yellow', '21')
+yellow21
+('red-magenta', '20')
+red-magenta20
+('white', '0')
+white0
+('red-magenta', '18')
+red-magenta18
+('yellow', '15')
+yellow15
+('blue-cyan', '18')
+blue-cyan18
+('yellow', '13')
+yellow13
+('yellow-red', '11')
+yellow-red11
+('gray', '0')
+gray0
+('cyan', '22')
+cyan22
+('yellow-red', '15')
+yellow-red15
+('yellow-red', '13')
+yellow-red13
+[<BaseColor: magenta-blue22>, <BaseColor: red17>, <BaseColor: gray1>, <BaseColor: yellow17>, <BaseColor: yellow16>, <BaseColor: yellow20>, <BaseColor: yellow21>, <BaseColor: red-magenta20>, <BaseColor: white0>, <BaseColor: red-magenta18>, <BaseColor: yellow15>, <BaseColor: blue-cyan18>, <BaseColor: yellow13>, <BaseColor: yellow-red11>, <BaseColor: gray0>, <BaseColor: cyan22>, <BaseColor: yellow-red15>, <BaseColor: yellow-red13>]
+colorfamily does not exist
+[<ColorPattern: name of color palette: cream >]
+
+
+Set([])
+"""

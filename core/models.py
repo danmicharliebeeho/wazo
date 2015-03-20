@@ -37,7 +37,7 @@ class ColorPattern(models.Model):
     name = models.CharField(max_length=32, blank=False, null=False, unique = True)
     slug = models.SlugField(max_length=32, blank=True, null=True)
     swatch_url = models.URLField(blank=True, null=True)
-    swatch_file = models.ImageField(upload_to=settings.SWATCH_ROOT, blank=False)
+    swatch_file = models.ImageField(upload_to='swatch/', blank=False)
     
     num_of_colors = models.IntegerField(blank=True, null=True)
     is_solid = models.BooleanField(blank=False, default=False)
